@@ -33,7 +33,7 @@ docker-compose exec mysql mysqldump -u tcrd_read_only -p \
   --no-tablespaces \
   --skip-triggers \
   --compact \
-  tcrd > tcrd_mysql.sql
+  tcrd > tinx-mysql.dump
 ```
 
 This dump file was generated on 03/23/2026.
