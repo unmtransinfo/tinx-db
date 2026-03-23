@@ -3,7 +3,7 @@ FROM mysql:8
 # Default database name (can be overridden at runtime via MYSQL_DATABASE)
 ENV MYSQL_DATABASE=tcrd
 
-# URL of the SQL dump to stream at first-boot initialisation
+# URL of the SQL dump to stream at first-boot initialization
 ENV DUMP_URL=https://unmtid-dbs.net/download/TIN-X/tinx-mysql.dump
 
 # Install curl (mysql:8 is Oracle Linux 9 based)
