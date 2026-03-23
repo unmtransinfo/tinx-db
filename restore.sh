@@ -6,9 +6,13 @@ DUMP_URL="${DUMP_URL:-https://unmtid-dbs.net/download/TIN-X/tinx-mysql.dump}"
 
 echo "Downloading and restoring database into '$DB_NAME' from '$DUMP_URL'..."
 
-# Stream the dump directly into mysql - avoids storing 35 GB on disk twice
+# Stream the dump directly into mysql - avoids storing 35 GB on disk twice.
+# FOREIGN_KEY_CHECKS=0 is required because the --compact dump omits the
+# preamble that normally disables FK checks, causing failures when a table
+# with a FK is created before its referenced table appears in the stream.
 curl -fsSL "$DUMP_URL" \
   | mysql \
+      --init-command="SET SESSION FOREIGN_KEY_CHECKS=0; SET SESSION UNIQUE_CHECKS=0;" \
       -u root \
       -p"${MYSQL_ROOT_PASSWORD}" \
       "$DB_NAME"
