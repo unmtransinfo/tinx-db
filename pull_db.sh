@@ -1,18 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-# ── Docker resource constraints ───────────────────────────────────────────────
-CPUS=8      # passed to --cpus; decimals accepted (e.g. 4.5)
-MEMORY=32G  # passed to --memory; suffix must be G or M (e.g. 32G, 16384M)
-
-# ── MySQL credentials ─────────────────────────────────────────────────────────
-MYSQL_ROOT_PASSWORD="root_pass"  # modify if using in prod
-MYSQL_DATABASE="tinx"
-DB_USER="tinx_user"
-DB_PASSWORD="user_pass"          # modify if using in prod
-
-# MySQL host port
-HOST_PORT=3306
+# ── Load environment variables ────────────────────────────────────────────────
+if [ ! -f .env ]; then
+    echo "ERROR: .env file not found. Copy .env.example to .env and fill in your values." >&2
+    exit 1
+fi
+# shellcheck source=.env.example
+source .env
 
 # ── Auto-derive MySQL tuning from CPUS / MEMORY ───────────────────────────────
 
@@ -72,14 +67,10 @@ echo "  innodb_log_buffer_size       = ${INNODB_LOG_BUFFER_SIZE}"
 # ── Build and run ─────────────────────────────────────────────────────────────
 # TODO: replace this with dockerhub repo once pushed
 docker build -t tinx-db .
-docker run -d \
+docker run -d --env-file .env \
   --cpus ${CPUS} \
   --memory ${MEMORY} \
   -p ${HOST_PORT}:3306 \
-  -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
-  -e MYSQL_DATABASE=${MYSQL_DATABASE} \
-  -e DB_USER=${DB_USER} \
-  -e DB_PASSWORD=${DB_PASSWORD} \
   tinx-db \
   --innodb-buffer-pool-size=${INNODB_BUFFER_POOL_SIZE} \
   --innodb-buffer-pool-instances=${INNODB_BUFFER_POOL_INSTANCES} \
