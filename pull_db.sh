@@ -71,6 +71,7 @@ docker run -d --env-file .env \
   --cpus ${CPUS} \
   --memory ${MEMORY} \
   -p ${HOST_PORT}:3306 \
+  -v tinx-mysql-data:/var/lib/mysql \
   tinx-db \
   --innodb-buffer-pool-size=${INNODB_BUFFER_POOL_SIZE} \
   --innodb-buffer-pool-instances=${INNODB_BUFFER_POOL_INSTANCES} \
