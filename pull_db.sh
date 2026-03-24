@@ -2,8 +2,6 @@
 set -e
 
 # ── Docker resource constraints ───────────────────────────────────────────────
-# These are the only two values you need to set. All MySQL tuning params are
-# derived automatically from them.
 CPUS=8      # passed to --cpus; decimals accepted (e.g. 4.5)
 MEMORY=32G  # passed to --memory; suffix must be G or M (e.g. 32G, 16384M)
 
@@ -12,6 +10,9 @@ MYSQL_ROOT_PASSWORD="root_pass"  # modify if using in prod
 MYSQL_DATABASE="tinx"
 DB_USER="tinx_user"
 DB_PASSWORD="user_pass"          # modify if using in prod
+
+# MySQL host port
+HOST_PORT=3306
 
 # ── Auto-derive MySQL tuning from CPUS / MEMORY ───────────────────────────────
 
@@ -74,7 +75,7 @@ docker build -t tinx-db .
 docker run -d \
   --cpus ${CPUS} \
   --memory ${MEMORY} \
-  -p 3306:3306 \
+  -p ${HOST_PORT}:3306 \
   -e MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD} \
   -e MYSQL_DATABASE=${MYSQL_DATABASE} \
   -e DB_USER=${DB_USER} \
