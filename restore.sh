@@ -12,7 +12,7 @@ echo "Downloading and restoring database into '$DB_NAME' from '$DUMP_URL'..."
 # with a FK is created before its referenced table appears in the stream.
 curl -fsSL "$DUMP_URL" \
   | mysql \
-      --init-command="SET SESSION FOREIGN_KEY_CHECKS=0; SET SESSION UNIQUE_CHECKS=0; SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION';" \
+      --init-command="SET SESSION FOREIGN_KEY_CHECKS=0; SET SESSION UNIQUE_CHECKS=0; SET SESSION sql_mode='NO_ENGINE_SUBSTITUTION'; SET SESSION autocommit=0; SET SESSION innodb_flush_log_at_trx_commit=0;" \
       -u root \
       -p"${MYSQL_ROOT_PASSWORD}" \
       "$DB_NAME"
