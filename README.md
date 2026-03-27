@@ -35,11 +35,23 @@ bash pull_db.sh
 On the TIN-X production server (chiltepin.health.unm.edu) the following command was executed against a live version of the TIN-X database:
 
 ```bash
-docker-compose exec mysql mysqldump -u tcrd_read_only -p \
-  --no-tablespaces \
-  --skip-triggers \
-  --compact \
-  tcrd > tinx-mysql.dump
+# Step 1: Install mysqlsh into the already-running container
+# (MySQL repo is already configured in the image, so this just works)
+docker-compose exec mysql microdnf install -y mysql-shell
+
+# Step 2: Run the schema dump (inside the container, output to /tmp)
+docker-compose exec mysql mysqlsh root@localhost \
+  -- util dump-schemas tcrd \
+  --outputUrl=/tmp/tcrd-shell-dump \
+  --threads=8 \
+  --compression=zstd
+
+# Step 3: Tar it up inside the container
+docker-compose exec mysql tar -czf /tmp/tinx-mysql-shell.tar.gz \
+  -C /tmp tcrd-shell-dump/
+
+# Step 4: Copy the tarball out to the host
+docker cp $(docker-compose ps -q mysql):/tmp/tinx-mysql-shell.tar.gz ./
 ```
 
-This dump file was generated on 03/23/2026.
+This dump file was generated on 03/26/2026.
