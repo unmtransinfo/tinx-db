@@ -18,7 +18,7 @@ mysqlsh root@localhost \
   --password="${MYSQL_ROOT_PASSWORD}" \
   -- util load-dump "$DUMP_DIR" \
   --threads=8 \
-  --skipBinLog=true
+  --skipBinlog=true
 
 # Clean up temporary files to reclaim disk space
 rm -rf "$TARBALL" "$DUMP_DIR"
