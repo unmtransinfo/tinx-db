@@ -1,4 +1,4 @@
-FROM mysql:8
+FROM mysql:8.0
 
 # Default database name — must match the schema name embedded in the dump
 ENV MYSQL_DATABASE=tcrd
