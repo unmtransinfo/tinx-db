@@ -85,4 +85,5 @@ docker run -d --env-file .env \
   --bulk-insert-buffer-size=${BULK_INSERT_BUFFER_SIZE} \
   --sort-buffer-size=${SORT_BUFFER_SIZE} \
   --read-rnd-buffer-size=${READ_RND_BUFFER_SIZE} \
-  --join-buffer-size=${JOIN_BUFFER_SIZE}
+  --join-buffer-size=${JOIN_BUFFER_SIZE} \
+  --local-infile=1 # required for mysqlsh restore
