@@ -13,19 +13,19 @@ name: tinx-db
 services:
   db:
     build: .
-    # Load MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, DB_USER, DB_PASSWORD, DUMP_URL, TZ
-    env_file: .env
-    ports:
-      - "127.0.0.1:${HOST_PORT}:3306"
     volumes:
       - tinx-mysql-data:/var/lib/mysql
       - ./mysql-tuning.cnf:/etc/mysql/conf.d/tuning.cnf:ro
+    # Load MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, DB_USER, DB_PASSWORD, DUMP_URL, TZ
+    env_file: .env
+    ports:
+      - '127.0.0.1:${HOST_PORT}:3306'
+    restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: "${CPUS}"
           memory: "${MEMORY}"
-    restart: unless-stopped
 
 volumes:
   tinx-mysql-data:
