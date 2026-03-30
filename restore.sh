@@ -28,18 +28,12 @@ echo "Restore complete."
 # Create read-only user if DB_USER and DB_PASSWORD are set
 if [ -n "$DB_USER" ] && [ -n "$DB_PASSWORD" ]; then
   echo "Creating read-only user '$DB_USER'..."
-
-  mysql -u root -p"${MYSQL_ROOT_PASSWORD}" <<-EOSQL
-    -- Create the read-only user (accessible from any host)
-    CREATE USER IF NOT EXISTS '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD';
-
-    -- Grant SELECT on all tables in the target database
-    GRANT SELECT ON \`$DB_NAME\`.* TO '$DB_USER'@'%';
-
-    -- Apply privilege changes immediately
-    FLUSH PRIVILEGES;
-EOSQL
-
+  mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -e "
+    CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
+  "
+  mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -D "${DB_NAME}" -e "
+    GRANT SELECT ON ${DB_NAME}.* TO '${DB_USER}'@'%';
+  "
   echo "Read-only user '$DB_USER' created successfully."
 fi
 
