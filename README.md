@@ -30,6 +30,15 @@ All InnoDB tuning parameters (`innodb_buffer_pool_size`, IO threads, redo log ca
 bash pull_db.sh
 ```
 
+- Note: The DB will take some time to restore, it takes about 2 hours using 8 CPUs and 128GB of RAM.
+
+3. After the DB restore/initialization is complete one can connect to the database like so from the host:
+
+```bash
+# use DB_PASSWORD when prompted for password
+mysql -D tcrd -u <DB_USER> -P <HOST_PORT> -h 127.0.0.1 -p
+```
+
 ## How dump file was created
 
 On the TIN-X production server (chiltepin.health.unm.edu) the following command was executed against a live version of the TIN-X database:
