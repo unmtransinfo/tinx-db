@@ -1,3 +1,4 @@
+# see https://kedar.nitty-witty.com/blog/a-unique-foreign-key-issue-in-mysql-8-4 for why 8.4 cannot be used
 FROM mysql:8.0
 
 # Default database name — must match the schema name embedded in the dump
