@@ -29,7 +29,7 @@ All InnoDB tuning parameters (`innodb_buffer_pool_size`, IO threads, redo log ca
 3. Run docker compose:
 
 ```bash
-docker compose up
+docker compose up -d
 ```
 
 - Note: The DB will take some time to restore, it takes about 2 hours using 8 CPUs and 128GB of RAM.
