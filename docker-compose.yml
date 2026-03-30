@@ -8,7 +8,7 @@
 # To rebuild the image after a Dockerfile change:
 #   docker compose up -d --build
 
-name: tinx-db
+name: tinx
 
 services:
   db:
