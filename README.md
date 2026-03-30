@@ -4,6 +4,11 @@ This repository contains code for constructing the docker image of the TIN-X dat
 
 At the time of writing the DB platform used is `mysql`.
 
+## Prerequisites
+
+- [Docker](https://docs.docker.com/engine/install/)
+- At least 90GB of free storage space
+
 ## Usage
 
 1. Copy `.env.example` to `.env` and edit values to match your environment:
