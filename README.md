@@ -38,7 +38,7 @@ One can track the progress of the restore with:
 docker compose logs -f
 ```
 
-- Note: The DB will take some time to restore, it takes about 2 hours using 8 CPUs and 128GB of RAM.
+- Note: The DB will take some time to restore, it takes about 2 hours using `CPUS=8` and `MEMORY=128G`.
 
 3. After the DB restore/initialization is complete one can connect to the database like so from the host:
 
