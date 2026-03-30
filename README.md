@@ -24,10 +24,12 @@ cp .env.example .env
 
 All InnoDB tuning parameters (`innodb_buffer_pool_size`, IO threads, redo log capacity, etc.) are derived automatically from `CPUS` and `MEMORY`.
 
-2. Run `pull_db.sh` to build the image, derive tuning params, and start the container:
+2. Run [tune.sh](tune.sh) to generate a MySQL configuration file based on your resources params (`CPUS` and `MEMORY`)
+
+3. Run docker compose:
 
 ```bash
-bash pull_db.sh
+docker compose up
 ```
 
 - Note: The DB will take some time to restore, it takes about 2 hours using 8 CPUs and 128GB of RAM.
