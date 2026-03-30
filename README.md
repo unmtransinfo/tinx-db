@@ -32,6 +32,12 @@ All InnoDB tuning parameters (`innodb_buffer_pool_size`, IO threads, redo log ca
 docker compose up -d
 ```
 
+One can track the progress of the restore with:
+
+```bash
+docker compose logs -f
+```
+
 - Note: The DB will take some time to restore, it takes about 2 hours using 8 CPUs and 128GB of RAM.
 
 3. After the DB restore/initialization is complete one can connect to the database like so from the host:
