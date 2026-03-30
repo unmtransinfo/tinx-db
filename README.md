@@ -8,44 +8,42 @@ At the time of writing the DB platform used is `mysql`.
 
 1. Copy `.env.example` to `.env` and edit values to match your environment:
 
-```bash
-cp .env.example .env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-| Variable              | Description                                                             |
-| --------------------- | ----------------------------------------------------------------------- |
-| `CPUS`                | CPU cores allocated to the container (decimals accepted, e.g. `4.5`)    |
-| `MEMORY`              | RAM allocated to the container — suffix must be `G` or `M` (e.g. `32G`) |
-| `MYSQL_ROOT_PASSWORD` | Root password for the MySQL instance                                    |
-| `MYSQL_DATABASE`      | Name of the database to create and restore into                         |
-| `DB_USER`             | Read-only user created after restore                                    |
-| `DB_PASSWORD`         | Password for the read-only user                                         |
-| `HOST_PORT`           | Host port mapped to MySQL's container port 3306                         |
-
-All InnoDB tuning parameters (`innodb_buffer_pool_size`, IO threads, redo log capacity, etc.) are derived automatically from `CPUS` and `MEMORY`.
+   | Variable              | Description                                                             |
+   | --------------------- | ----------------------------------------------------------------------- |
+   | `CPUS`                | CPU cores allocated to the container (decimals accepted, e.g. `4.5`)    |
+   | `MEMORY`              | RAM allocated to the container — suffix must be `G` or `M` (e.g. `32G`) |
+   | `MYSQL_ROOT_PASSWORD` | Root password for the MySQL instance                                    |
+   | `MYSQL_DATABASE`      | Name of the database to create and restore into                         |
+   | `DB_USER`             | Read-only user created after restore                                    |
+   | `DB_PASSWORD`         | Password for the read-only user                                         |
+   | `HOST_PORT`           | Host port mapped to MySQL's container port 3306                         |
 
 2. Run [tune.sh](tune.sh) to generate a MySQL configuration file based on your resources params (`CPUS` and `MEMORY`)
 
 3. Run docker compose:
 
-```bash
-docker compose up -d
-```
+   ```bash
+   docker compose up -d
+   ```
 
-One can track the progress of the restore with:
+   One can track the progress of the restore with:
 
-```bash
-docker compose logs -f
-```
+   ```bash
+   docker compose logs -f
+   ```
 
-- Note: The DB will take some time to restore, it takes about 2 hours using `CPUS=8` and `MEMORY=128G`.
+   The DB will take some time to restore, it takes about 2 hours using `CPUS=8` and `MEMORY=128G`.
 
-3. After the DB restore/initialization is complete one can connect to the database like so from the host:
+4. After the DB restore/initialization is complete one can connect to the database like so from the host:
 
-```bash
-# use DB_PASSWORD when prompted for password
-mysql -D tcrd -u <DB_USER> -P <HOST_PORT> -h 127.0.0.1 -p
-```
+   ```bash
+   # use DB_PASSWORD when prompted for password
+   mysql -D tcrd -u <DB_USER> -P <HOST_PORT> -h 127.0.0.1 -p
+   ```
 
 ## How dump file was created
 
