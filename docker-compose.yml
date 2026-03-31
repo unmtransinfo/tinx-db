@@ -1,12 +1,10 @@
 # TIN-X database — docker compose
+# you can replace "build: ." with "image: unmtransinfo/tinx_db:latest" if you'd like to use the dockerhub image instead 
 #
 # Prerequisites:
 #   1. cp .env.example .env  && fill in CPUS, MEMORY, HOST_PORT, credentials
 #   2. ./tune.sh             # generates mysql-tuning.cnf from your CPUS/MEMORY
 #   3. docker compose up -d  # builds image and starts the container
-#
-# To rebuild the image after a Dockerfile change:
-#   docker compose up -d --build
 
 name: tinx
 
