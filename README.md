@@ -8,6 +8,7 @@ At the time of writing the DB platform used is `mysql`.
 
 - [Docker](https://docs.docker.com/engine/install/)
 - At least 90GB of free storage space
+- (Recommended) at least 32GB of RAM
 
 ## Usage
 
@@ -42,6 +43,12 @@ At the time of writing the DB platform used is `mysql`.
    ```
 
    The DB will take some time to restore, it takes about 2 hours using `CPUS=8` and `MEMORY=128G`.
+
+   The container will be ready to use once you see a message like the following:
+
+   ```bash
+   [Server] /usr/sbin/mysqld: ready for connections.
+   ```
 
 4. After the DB restore/initialization is complete one can connect to the database like so from the host:
 
