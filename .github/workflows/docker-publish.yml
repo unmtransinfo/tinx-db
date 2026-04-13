@@ -1,13 +1,6 @@
 name: Build and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "Dockerfile"
-      - "restore.sh"
-      - ".github/workflows/docker-publish.yml"
   release:
     types: [published]
   workflow_dispatch:

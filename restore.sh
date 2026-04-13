@@ -37,6 +37,16 @@ if [ -n "$DB_USER" ] && [ -n "$DB_PASSWORD" ]; then
   echo "Read-only user '$DB_USER' created successfully."
 fi
 
+echo "Fixing view definers from dump..."
+mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -D "${DB_NAME}" -e "
+  SELECT CONCAT(
+    'ALTER DEFINER=\`root\`@\`localhost\` SQL SECURITY INVOKER VIEW \`',
+    TABLE_NAME, '\` AS ', VIEW_DEFINITION, ';')
+  FROM information_schema.VIEWS
+  WHERE TABLE_SCHEMA = '${DB_NAME}'
+    AND DEFINER != 'root@localhost'
+" -sN | mysql -u root -p"${MYSQL_ROOT_PASSWORD}" -D "${DB_NAME}"
+
 # Create completion marker
 echo "Database initialization complete at $(date)" > /var/lib/mysql/restore_complete
 echo "Database restore and setup complete."
