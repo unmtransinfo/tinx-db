@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -e
 
-MYSQL_USER='root'
-
+# 1. Copy the required tables from tcrd -> tinx
 REQUIRED_TABLES="
 tinx_articlerank
 tinx_disease
@@ -17,18 +17,21 @@ do_parent
 dto
 "
 
-mysqldump \
-	-u ${MYSQL_USER} \
-	--no-create-db \
-	--compact \
-	--skip-lock-tables \
-	-e \
-	--add-locks \
-	--no-autocommit \
-	-p tcrd ${REQUIRED_TABLES} > tcrd_subset.sql
+SQL="CREATE DATABASE IF NOT EXISTS tinx;
+SET foreign_key_checks = 0;
+"
 
+for TABLE in $REQUIRED_TABLES; do
+    SQL+="CREATE TABLE tinx.${TABLE} LIKE tcrd.${TABLE};
+INSERT INTO tinx.${TABLE} SELECT * FROM tcrd.${TABLE};
+"
+done
 
-gzip tcrd_subset.sql
+SQL+="SET foreign_key_checks = 1;"
 
+mysql -u root -p -e "$SQL"
 
-echo $REQUIRED_TABLES
+# 2. Run migration scripts in order against tinx
+for script in src/sql/*.sql; do
+    mysql -u root -p"${PASSWORD}" tinx < "$script"
+done
