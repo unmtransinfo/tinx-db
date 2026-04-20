@@ -55,12 +55,16 @@ done
 
 SQL+="SET foreign_key_checks = 1;"
 
+echo "Creating tinx database and copying tables from tcrd..."
 mysql "${mysql_args[@]}" -e "$SQL"
+echo "Done."
 
 # ---------------------------------------------------------------------------
 # 2. Run migration scripts in order against tinx
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 for script in "$SCRIPT_DIR/sql/"*.sql; do
+    echo "Running $(basename "$script")..."
     mysql "${mysql_args[@]}" tinx < "$script"
 done
+echo "Migration complete."
