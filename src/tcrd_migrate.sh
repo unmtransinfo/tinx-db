@@ -26,14 +26,13 @@ mysql_args=(-h "$HOST" -P "$PORT" -u root)
 [[ -n "$MYSQL_PASSWORD" ]] && mysql_args+=("-p${MYSQL_PASSWORD}") || mysql_args+=("-p")
 
 # ---------------------------------------------------------------------------
-# 1. Copy the required tables from tcrd -> tinx
+# 1. Copy the required tables/views from tcrd -> tinx
 # ---------------------------------------------------------------------------
 REQUIRED_TABLES="
 tinx_articlerank
 tinx_disease
 tinx_importance
 tinx_novelty
-tinx_target
 pubmed
 protein
 target
@@ -43,6 +42,10 @@ do_parent
 dto
 "
 
+REQUIRED_VIEWS="
+tinx_target
+"
+
 SQL="CREATE DATABASE IF NOT EXISTS tinx;
 SET foreign_key_checks = 0;
 "
@@ -50,6 +53,11 @@ SET foreign_key_checks = 0;
 for TABLE in $REQUIRED_TABLES; do
     SQL+="CREATE TABLE tinx.${TABLE} LIKE tcrd.${TABLE};
 INSERT INTO tinx.${TABLE} SELECT * FROM tcrd.${TABLE};
+"
+done
+
+for VIEW in $REQUIRED_VIEWS; do
+    SQL+="CREATE TABLE tinx.${VIEW} AS SELECT * FROM tcrd.${VIEW};
 "
 done
 
