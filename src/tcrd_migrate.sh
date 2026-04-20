@@ -22,7 +22,8 @@ MYSQL_PASSWORD="${MYSQL_PASSWORD:-}"
 # A password is passed via -p<password> only when the variable is non-empty;
 # otherwise the client will prompt interactively.
 mysql_args=(-h "$HOST" -P "$PORT" -u root)
-[[ -n "$MYSQL_PASSWORD" ]] && mysql_args+=("-p${MYSQL_PASSWORD}")
+# If a password is provided use it directly, otherwise pass bare -p to prompt.
+[[ -n "$MYSQL_PASSWORD" ]] && mysql_args+=("-p${MYSQL_PASSWORD}") || mysql_args+=("-p")
 
 # ---------------------------------------------------------------------------
 # 1. Copy the required tables from tcrd -> tinx
