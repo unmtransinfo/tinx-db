@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS protein_metadata (
 );
 
 INSERT INTO protein_metadata (protein_id, num_important_diseases)
+SELECT
     protein.id AS protein_id,
     COUNT(tinx_importance.id) AS num_important_diseases
   FROM protein
