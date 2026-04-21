@@ -19,7 +19,10 @@ CREATE TABLE IF NOT EXISTS tinx_disease_metadata (
   num_important_targets INT,
   PRIMARY KEY (id),
   FOREIGN KEY (tinx_disease_id) REFERENCES tinx_disease (id)
-) SELECT
+);
+
+INSERT INTO tinx_disease_metadata (tinx_disease_id, num_important_targets)
+SELECT
     tinx_disease.id AS tinx_disease_id,
     COUNT(tinx_importance.id)  AS num_important_targets
   FROM tinx_disease
@@ -34,7 +37,9 @@ CREATE TABLE IF NOT EXISTS protein_metadata (
   num_important_diseases INT,
   PRIMARY KEY (id),
   FOREIGN KEY (protein_id) REFERENCES protein (id)
-) SELECT
+);
+
+INSERT INTO protein_metadata (protein_id, num_important_diseases)
     protein.id AS protein_id,
     COUNT(tinx_importance.id) AS num_important_diseases
   FROM protein
