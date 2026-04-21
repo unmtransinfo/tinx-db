@@ -30,8 +30,8 @@ SELECT
   GROUP BY tinx_disease.id;
 
 /* Important diseases per protein. */
-DROP TABLE IF EXISTS protein_metadata;
-CREATE TABLE IF NOT EXISTS protein_metadata (
+DROP TABLE IF EXISTS tinx_protein_metadata;
+CREATE TABLE IF NOT EXISTS tinx_protein_metadata (
   id INT AUTO_INCREMENT,
   protein_id INT,
   num_important_diseases INT,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS protein_metadata (
   FOREIGN KEY (protein_id) REFERENCES protein (id)
 );
 
-INSERT INTO protein_metadata (protein_id, num_important_diseases)
+INSERT INTO tinx_protein_metadata (protein_id, num_important_diseases)
 SELECT
     protein.id AS protein_id,
     COUNT(tinx_importance.id) AS num_important_diseases
