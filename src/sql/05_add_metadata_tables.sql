@@ -60,7 +60,7 @@ GROUP BY
 CREATE TABLE IF NOT EXISTS
   tinx_nds_rank (
     id INT NOT NULL AUTO_INCREMENT,
-    doid VARCHAR(20) NOT NULL,
+    doid VARCHAR(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
     protein_id INT,
     `rank` INT,
     PRIMARY KEY (id),
