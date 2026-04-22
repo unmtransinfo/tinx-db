@@ -4,12 +4,12 @@
  */
 START TRANSACTION;
 
-alter table tinx_importance add column disease_id INT;
+ALTER TABLE tinx_importance
+ADD COLUMN disease_id INT;
 
-update tinx_importance 
-  join tinx_disease 
-    on tinx_disease.doid = tinx_importance.doid
-set disease_id = tinx_disease.id;
-
+UPDATE tinx_importance
+JOIN tinx_disease ON tinx_disease.doid = tinx_importance.doid
+SET
+  disease_id = tinx_disease.id;
 
 COMMIT;

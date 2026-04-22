@@ -1,11 +1,13 @@
 /* Rename, retype some columns. 
  */
-
 START TRANSACTION;
 
-alter table dto change `dtoid` id varchar(255);
-alter table dto change `parent_id` parent varchar(255);
+ALTER TABLE dto change dtoid id VARCHAR(255);
 
-update dto set parent = replace(parent, ':', '_');
+ALTER TABLE dto change parent_i parent VARCHAR(255);
+
+UPDATE dto
+SET
+    parent = REPLACE(parent, ':', '_');
 
 COMMIT;

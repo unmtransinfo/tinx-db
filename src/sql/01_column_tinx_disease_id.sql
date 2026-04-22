@@ -1,9 +1,19 @@
 /* Create tinx_disease.id and index. */
 START TRANSACTION;
 
-alter table tinx_disease add column id int not null;
-select @i := 0;
-UPDATE tinx_disease SET id = (select @i := @i + 1);
-create unique index tinx_disease_id on tinx_disease (id);
+ALTER TABLE tinx_disease
+ADD COLUMN id INT NOT NULL;
+
+SELECT
+    @ i := 0;
+
+UPDATE tinx_disease
+SET
+    id = (
+        SELECT
+            @ i := @ i + 1
+    );
+
+CREATE UNIQUE INDEX tinx_disease_id ON tinx_disease (id);
 
 COMMIT;

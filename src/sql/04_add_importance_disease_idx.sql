@@ -2,7 +2,6 @@
 START TRANSACTION;
 
 ALTER TABLE tinx_importance
-  ADD CONSTRAINT tinx_importance_disease_id_fk
-FOREIGN KEY (disease_id) REFERENCES tinx_disease (id);
+ADD CONSTRAINT tinx_importance_disease_id_fk FOREIGN KEY (disease_id) REFERENCES tinx_disease (id);
 
 COMMIT;
