@@ -82,3 +82,47 @@ docker cp $(docker-compose ps -q mysql):/tmp/tinx-mysql-shell.tar.gz ./
 ```
 
 This dump file was generated on 03/26/2026.
+
+## Creating the TIN-X Database from TCRD
+
+The steps below document how the TIN-X database is derived from TCRD.
+
+### Prerequisites
+
+- An existing [Conda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+- An existing MySQL instance with TCRD installed. See [tcrd-docker](https://github.com/unmtransinfo/tcrd-docker) for instructions on building a docker image with the TCRD if you do not already have this.
+
+### 1) Install dependencies
+
+1. Install and activate the project's virtual environment:
+
+```bash
+conda env create -f environment.yml && conda activate tinx-db
+```
+
+### 2) Run the migration script
+
+Modify the `HOST`, `PORT`, and `MYSQL_PASSWORD` variables to your specs:
+
+```bash
+cd src/
+HOST=127.0.0.1 PORT=3306 MYSQL_PASSWORD=<your_mysql_root_password> ./tcrd_migrate.sh
+```
+
+The [tcrd_migrate.sh](src/tcrd_migrate.sh) script will:
+
+1. Create the `tinx` database
+2. Export required tables from `tcrd` to `tinx`
+3. Run the migration scripts defined in [src/sql](src/sql)
+
+Please note that this step can take several hours to complete.
+
+### 3) Run compute_nds_rank.py
+
+Replace `127.0.0.1` with your `HOST`:
+
+```bash
+python compute_nds_rank.py tinx 127.0.0.1
+```
+
+When prompted for the username/password use `root` and `<your_mysql_root_password>`.
