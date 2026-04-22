@@ -122,10 +122,10 @@ def update_ranks(updates, doid, cursor):
     :return:
     """
     cursor.executemany(
-        f"""
+        """
     INSERT INTO tinx_nds_rank (doid, protein_id, `rank`)
-    VALUES ('{doid}', %s, %s)""",
-        updates.items(),
+    VALUES (%s, %s, %s)""",
+        [(doid, protein_id, rank) for protein_id, rank in updates.items()],
     )
 
 
@@ -170,48 +170,62 @@ def main():
 
     cursor = db_connection.cursor()
 
-    sys.stdout.write(" done.\n\n")
-    sys.stdout.write("Retrieving list of diseases ... ")
-    sys.stdout.flush()
+    try:
+        sys.stdout.write(" done.\n\n")
+        sys.stdout.write("Retrieving list of diseases ... ")
+        sys.stdout.flush()
 
-    cursor.execute("SELECT doid FROM tinx_disease")
-    diseases = cursor.fetchall()
-    print("done.")
-    disease_cnt = len(diseases)
-    print("Found {} total diseases.".format(disease_cnt))
+        cursor.execute("SELECT doid FROM tinx_disease")
+        diseases = cursor.fetchall()
+        print("done.")
+        disease_cnt = len(diseases)
+        print("Found {} total diseases.".format(disease_cnt))
 
-    print("")
-    sys.stdout.write("Determining total number of datapoints to rank ... ")
-    sys.stdout.flush()
-    cursor.execute("SELECT COUNT(*) FROM tinx_importance")
-    points_to_score = cursor.fetchone()[0]
-    print("done.")
-    print("Found {} total disease-target associations to rank.".format(points_to_score))
+        print("")
+        sys.stdout.write("Determining total number of datapoints to rank ... ")
+        sys.stdout.flush()
+        cursor.execute("SELECT COUNT(*) FROM tinx_importance")
+        points_to_score = cursor.fetchone()[0]
+        print("done.")
+        print(
+            "Found {} total disease-target associations to rank.".format(
+                points_to_score
+            )
+        )
 
-    print("")
-    sys.stdout.write("Truncating tinx_nds_rank ... ")
-    sys.stdout.flush()
-    cursor.execute("TRUNCATE TABLE tinx_nds_rank")
-    print("done.")
+        print("")
+        sys.stdout.write("Truncating tinx_nds_rank ... ")
+        sys.stdout.flush()
+        cursor.execute("TRUNCATE TABLE tinx_nds_rank")
+        print("done.")
 
-    print("")
-    print("Computing NDS ranks ...")
+        print("")
+        print("Computing NDS ranks ...")
 
-    with tqdm(total=points_to_score, desc="Progress", unit="assoc") as pbar:
-        for i in range(0, disease_cnt):
-            updates = bin_into_fronts(diseases[i][0], cursor)
-            update_ranks(updates, diseases[i][0], cursor)
-            pbar.update(len(updates))
-            pbar.set_postfix_str("disease {} of {}".format(i + 1, disease_cnt))
+        with tqdm(total=points_to_score, desc="Progress", unit="assoc") as pbar:
+            for i in range(0, disease_cnt):
+                updates = bin_into_fronts(diseases[i][0], cursor)
+                update_ranks(updates, diseases[i][0], cursor)
+                pbar.update(len(updates))
+                pbar.set_postfix_str("disease {} of {}".format(i + 1, disease_cnt))
 
-    print("")
-    sys.stdout.write("Committing changes ... ")
-    sys.stdout.flush()
-    db_connection.commit()
-    print("done.")
+        print("")
+        sys.stdout.write("Committing changes ... ")
+        sys.stdout.flush()
+        db_connection.commit()
+        print("done.")
 
-    print("")
-    print("Computation of NDS rank successful for all disease-target associations.")
+        print("")
+        print("Computation of NDS rank successful for all disease-target associations.")
+    except Exception as e:
+        db_connection.rollback()
+        print("")
+        print("An error occurred; all changes have been rolled back.")
+        print(e)
+        sys.exit(1)
+    finally:
+        cursor.close()
+        db_connection.close()
 
 
 if __name__ == "__main__":
