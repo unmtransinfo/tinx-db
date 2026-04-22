@@ -195,16 +195,12 @@ def main():
     print("")
     print("Computing NDS ranks ...")
 
-    # Number of points ranked so far
-    points_ranked = 0
-
     with tqdm(total=points_to_score, desc="Progress", unit="assoc") as pbar:
         for i in range(0, disease_cnt):
             updates = bin_into_fronts(diseases[i][0], cursor)
             update_ranks(updates, diseases[i][0], cursor)
             pbar.update(len(updates))
             pbar.set_postfix_str("disease {} of {}".format(i + 1, disease_cnt))
-            points_ranked += len(updates)
 
     print("")
     sys.stdout.write("Committing changes ... ")
