@@ -60,10 +60,13 @@ GROUP BY
 CREATE TABLE IF NOT EXISTS
   tinx_nds_rank (
     id INT NOT NULL AUTO_INCREMENT,
-    tinx_importance_id INT,
+    doid VARCHAR(20) NOT NULL,
+    protein_id INT,
     `rank` INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (tinx_importance_id) REFERENCES tinx_importance (id)
+    KEY (protein_id),
+    KEY tinx_nds_rank_rank_asc (`rank`),
+    FOREIGN KEY (doid) REFERENCES tinx_importance (doid)
   );
 
 COMMIT;
