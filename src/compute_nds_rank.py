@@ -42,32 +42,7 @@ import getpass
 import sys
 
 import MySQLdb
-
-
-# Print progress bar. Adapted from:
-# https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
-def printProgressBar(
-    iteration, total, prefix="", suffix="", decimals=1, length=100, fill="#"
-):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-    """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + "-" * (length - filledLength)
-    sys.stdout.write("\r%s |%s| %s%% %s\r" % (prefix, bar, percent, suffix))
-    sys.stdout.flush()
-    # Print New Line on Complete
-    if iteration == total:
-        sys.stdout.write("\n")
+from tqdm import tqdm
 
 
 def get_datapoints_for_disease(disease_id, cursor):
@@ -219,25 +194,17 @@ def main():
 
     print("")
     print("Computing NDS ranks ...")
-    # Print the inital (0%) progress bar
-    printProgressBar(
-        0, points_to_score, prefix="Progress:", suffix="Complete", length=50
-    )
 
     # Number of points ranked so far
     points_ranked = 0
 
-    for i in range(0, disease_cnt):
-        updates = bin_into_fronts(diseases[i][0], cursor)
-        points_ranked += len(updates)
-        update_ranks(updates, diseases[i][0], cursor)
-        printProgressBar(
-            points_ranked,
-            points_to_score,
-            prefix="Progress:",
-            suffix="Complete [Working on disease {} of {}]".format(i, disease_cnt),
-            length=50,
-        )
+    with tqdm(total=points_to_score, desc="Progress", unit="assoc") as pbar:
+        for i in range(0, disease_cnt):
+            updates = bin_into_fronts(diseases[i][0], cursor)
+            update_ranks(updates, diseases[i][0], cursor)
+            pbar.update(len(updates))
+            pbar.set_postfix_str("disease {} of {}".format(i + 1, disease_cnt))
+            points_ranked += len(updates)
 
     print("")
     sys.stdout.write("Committing changes ... ")
