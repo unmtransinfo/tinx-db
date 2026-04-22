@@ -73,7 +73,7 @@ def get_datapoints_for_disease(disease_id, cursor):
 def bin_into_fronts(disease_id, cursor):
     """
     Determine the NDS rank of each target associated with the specified disease
-    and return a dictionary mapping tinx_importance.id to the new rank.
+    and return a dictionary mapping tinx_importance.protein_id to the new rank.
 
     :param disease_id: The disease for which to compute NDS ranks.
     :return: A dictionary mapping ID's to the new ranks to assign.
