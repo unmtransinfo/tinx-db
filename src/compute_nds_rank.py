@@ -8,7 +8,7 @@
 #
 # To oversimplify: The most interesting points are those that are on the
 # northeastern edge of the plot, followed by those that would be on the
-# norhteastern edge if the actual northeastern edge were removed, and so on.
+# northeastern edge if the actual northeastern edge were removed, and so on.
 #
 # Codifying this mathematically: We seek to identify a non-dominated solution
 # (NDS) to the multi-objective optimization problem of maximizing both
@@ -159,12 +159,14 @@ def main():
     sys.stdout.flush()
 
     try:
-        db_connection = MySQLdb.connect(hostname, username, password, database)
+        db_connection = MySQLdb.connect(
+            host=hostname, user=username, password=password, database=database
+        )
     except Exception as e:
         print("")
         print("Can't connect to database")
         print(e)
-        exit(1)
+        sys.exit(1)
 
     cursor = db_connection.cursor()
 
