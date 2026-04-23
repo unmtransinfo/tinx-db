@@ -1,13 +1,11 @@
-/* Rename, retype some columns. 
- */
+/* Normalize dto.parent_id to the canonical CURIE format (e.g. PR:000000001)
+ * expected by the UI/API. */
 START TRANSACTION;
-
-ALTER TABLE dto change dtoid id VARCHAR(255);
-
-ALTER TABLE dto change parent_i parent VARCHAR(255);
 
 UPDATE dto
 SET
-    parent = REPLACE(parent, ':', '_');
+    parent_id =
+REPLACE
+    (parent_id, '_', ':');
 
 COMMIT;
