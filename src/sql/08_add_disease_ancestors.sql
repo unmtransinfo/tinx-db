@@ -17,7 +17,7 @@ CREATE TABLE
     doid VARCHAR(255) NOT NULL,
     max_ancestor VARCHAR(255) NOT NULL,
     ancestor_path TEXT NOT NULL,
-    KEY (doid),
+    PRIMARY KEY (doid),
     KEY (max_ancestor)
   )
 SELECT
