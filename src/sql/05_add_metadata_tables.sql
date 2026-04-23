@@ -16,22 +16,22 @@ DROP TABLE IF EXISTS tinx_disease_metadata;
 CREATE TABLE IF NOT EXISTS
   tinx_disease_metadata (
     id INT AUTO_INCREMENT,
-    tinx_disease_id INT,
+    doid VARCHAR(255) NOT NULL,
     num_important_targets INT,
     PRIMARY KEY (id),
-    FOREIGN KEY (tinx_disease_id) REFERENCES tinx_disease (id)
+    KEY (doid)
   );
 
 INSERT INTO
-  tinx_disease_metadata (tinx_disease_id, num_important_targets)
+  tinx_disease_metadata (doid, num_important_targets)
 SELECT
-  tinx_disease.id AS tinx_disease_id,
-  COUNT(tinx_importance.id) AS num_important_targets
+  tinx_disease.doid AS doid,
+  COUNT(tinx_importance.doid) AS num_important_targets
 FROM
   tinx_disease
-  LEFT JOIN tinx_importance ON tinx_importance.disease_id = tinx_disease.id
+  LEFT JOIN tinx_importance ON tinx_importance.doid = tinx_disease.doid
 GROUP BY
-  tinx_disease.id;
+  tinx_disease.doid;
 
 /* Important diseases per protein. */
 DROP TABLE IF EXISTS tinx_protein_metadata;
