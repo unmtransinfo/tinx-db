@@ -26,7 +26,7 @@ INSERT INTO
   tinx_disease_metadata (doid, num_important_targets)
 SELECT
   tinx_disease.doid AS doid,
-  COUNT(tinx_importance.doid) AS num_important_targets
+  COUNT(DISTINCT (tinx_importance.protein_id)) AS num_important_targets
 FROM
   tinx_disease
   LEFT JOIN tinx_importance ON tinx_importance.doid = tinx_disease.doid
@@ -49,7 +49,7 @@ INSERT INTO
   tinx_protein_metadata (protein_id, num_important_diseases)
 SELECT
   protein.id AS protein_id,
-  COUNT(tinx_importance.doid) AS num_important_diseases
+  COUNT(DISTINCT (tinx_importance.doid)) AS num_important_diseases
 FROM
   protein
   LEFT JOIN tinx_importance ON tinx_importance.protein_id = protein.id
