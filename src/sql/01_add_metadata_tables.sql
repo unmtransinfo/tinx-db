@@ -49,7 +49,7 @@ INSERT INTO
   tinx_protein_metadata (protein_id, num_important_diseases)
 SELECT
   protein.id AS protein_id,
-  COUNT(tinx_importance.id) AS num_important_diseases
+  COUNT(tinx_importance.doid) AS num_important_diseases
 FROM
   protein
   LEFT JOIN tinx_importance ON tinx_importance.protein_id = protein.id
