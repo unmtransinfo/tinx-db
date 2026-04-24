@@ -5,11 +5,11 @@
  */
 /* Indexes for performance. Note that do_parent.doid is not unique and cannot
  * be a primary key. */
-CREATE INDEX do_parent_doid_idx ON do_parent (doid);
+CREATE INDEX IF NOT EXISTS do_parent_doid_idx ON do_parent (doid);
 
-CREATE INDEX do_parent_parent_idx ON do_parent (parent_id);
+CREATE INDEX IF NOT EXISTS do_parent_parent_idx ON do_parent (parent_id);
 
-CREATE INDEX tinx_disease_doid_idx ON tinx_disease (doid);
+CREATE INDEX IF NOT EXISTS tinx_disease_doid_idx ON tinx_disease (doid);
 
 /* Create the table. We assume a max depth of 14. (The longest observed was 10) */
 CREATE TABLE
