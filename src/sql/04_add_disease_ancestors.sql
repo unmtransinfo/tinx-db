@@ -14,6 +14,7 @@ CREATE INDEX tinx_disease_doid_idx ON tinx_disease (doid);
 /* Create the table. We assume a max depth of 14. (The longest observed was 10) */
 CREATE TABLE
   tinx_disease_ancestors (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST,
     doid VARCHAR(255) NOT NULL,
     max_ancestor VARCHAR(255) NOT NULL,
     ancestor_path TEXT NOT NULL,
