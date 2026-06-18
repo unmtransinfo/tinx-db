@@ -2,7 +2,7 @@
 FROM mysql:8.0
 
 # Default database name — must match the schema name embedded in the dump
-ENV MYSQL_DATABASE=tcrd
+ENV MYSQL_DATABASE=tinx
 
 # URL of the MySQL Shell dump tarball to restore at first-boot initialization
 ENV DUMP_URL=https://unmtid-dbs.net/download/TIN-X/tinx-mysql-shell.tar.gz
