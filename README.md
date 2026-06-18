@@ -57,32 +57,6 @@ At the time of writing the DB platform used is `mysql`.
    mysql -D tcrd -u <DB_USER> -P <HOST_PORT> -h 127.0.0.1 -p
    ```
 
-## How dump file was created
-
-On the TIN-X production server (chiltepin.health.unm.edu) the following command was executed against a live version of the TIN-X database:
-
-```bash
-# Step 1: Install mysqlsh into the already-running container
-# (MySQL repo is already configured in the image, so this just works)
-docker-compose exec mysql microdnf install -y mysql-shell
-
-# Step 2: Run the schema dump (inside the container, output to /tmp)
-docker-compose exec mysql mysqlsh root@localhost \
-  -- util dump-schemas tcrd \
-  --outputUrl=/tmp/tcrd-shell-dump \
-  --threads=8 \
-  --compression=zstd
-
-# Step 3: Tar it up inside the container
-docker-compose exec mysql tar -czf /tmp/tinx-mysql-shell.tar.gz \
-  -C /tmp tcrd-shell-dump/
-
-# Step 4: Copy the tarball out to the host
-docker cp $(docker-compose ps -q mysql):/tmp/tinx-mysql-shell.tar.gz ./
-```
-
-This dump file was generated on 03/26/2026.
-
 ## Creating the TIN-X Database from TCRD
 
 The steps below document how the TIN-X database is derived from TCRD.
@@ -126,3 +100,27 @@ python compute_nds_rank.py tinx 127.0.0.1
 ```
 
 When prompted for the username/password use `root` and `<your_mysql_root_password>`.
+
+## How dump file was created
+
+After constructing the TINX-DB using the steps from the [section above](#creating-the-tin-x-database-from-tcrd), the follow commands were run on the tcrd db docker container (the `db` service below):
+
+```bash
+# Step 1: Install mysqlsh into the already-running container
+# (MySQL repo is already configured in the image, so this just works)
+docker compose exec db microdnf install -y mysql-shell
+
+# Step 2: Run the schema dump (inside the container, output to /tmp)
+docker compose exec db mysqlsh root@localhost \
+  -- util dump-schemas tinx \
+  --outputUrl=/tmp/tinx-shell-dump \
+  --threads=8 \
+  --compression=zstd
+
+# Step 3: Tar it up inside the container
+docker compose exec db tar -czf /tmp/tinx-mysql-shell.tar.gz \
+  -C /tmp tinx-shell-dump/
+
+# Step 4: Copy the tarball out to the host
+docker cp $(docker compose ps -q db):/tmp/tinx-mysql-shell.tar.gz ./
+```
