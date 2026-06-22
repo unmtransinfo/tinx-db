@@ -124,3 +124,5 @@ docker compose exec db tar -czf /tmp/tinx-mysql-shell.tar.gz \
 # Step 4: Copy the tarball out to the host
 docker cp $(docker compose ps -q db):/tmp/tinx-mysql-shell.tar.gz ./
 ```
+
+**Note:** The `tinx` database in this dump file was created from `TCRD v6.13.4`.
