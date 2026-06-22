@@ -5,13 +5,13 @@ DB_NAME="${MYSQL_DATABASE:-tinx}"
 DUMP_URL="${DUMP_URL:-https://unmtid-dbs.net/download/TIN-X/tinx-mysql-shell.tar.gz}"
 
 TARBALL=/tmp/tinx-mysql-shell.tar.gz
-DUMP_DIR=/tmp/tinx-shell-dump
 
 echo "Downloading MySQL Shell dump from '$DUMP_URL'..."
 curl -fsSL -o "$TARBALL" "$DUMP_URL"
 
 echo "Extracting dump archive..."
 tar -xzf "$TARBALL" -C /tmp
+DUMP_DIR="/tmp/$(tar -tzf "$TARBALL" | head -1 | cut -d/ -f1)"
 
 echo "Loading dump into '$DB_NAME' using mysqlsh..."
 mysqlsh root@localhost \
