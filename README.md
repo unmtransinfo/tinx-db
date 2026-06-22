@@ -57,28 +57,72 @@ At the time of writing the DB platform used is `mysql`.
    mysql -D tcrd -u <DB_USER> -P <HOST_PORT> -h 127.0.0.1 -p
    ```
 
+## Creating the TIN-X Database from TCRD
+
+The steps below document how the TIN-X database is derived from TCRD.
+
+### Prerequisites
+
+- An existing [Conda installation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html)
+- An existing MySQL instance with TCRD installed. See [tcrd-docker](https://github.com/unmtransinfo/tcrd-docker) for instructions on building a docker image with the TCRD if you do not already have this.
+
+### 1) Install dependencies
+
+1. Install and activate the project's virtual environment:
+
+```bash
+conda env create -f environment.yml && conda activate tinx-db
+```
+
+### 2) Run the migration script
+
+Modify the `HOST`, `PORT`, and `MYSQL_PASSWORD` variables to your specs:
+
+```bash
+cd src/
+HOST=127.0.0.1 PORT=3306 MYSQL_PASSWORD=<your_mysql_root_password> ./tcrd_migrate.sh
+```
+
+The [tcrd_migrate.sh](src/tcrd_migrate.sh) script will:
+
+1. Create the `tinx` database
+2. Export required tables from `tcrd` to `tinx`
+3. Run the migration scripts defined in [src/sql](src/sql)
+
+Please note that this step can take several hours to complete.
+
+### 3) Run compute_nds_rank.py
+
+Replace `127.0.0.1` with your `HOST`:
+
+```bash
+python compute_nds_rank.py tinx 127.0.0.1
+```
+
+When prompted for the username/password use `root` and `<your_mysql_root_password>`.
+
 ## How dump file was created
 
-On the TIN-X production server (chiltepin.health.unm.edu) the following command was executed against a live version of the TIN-X database:
+After constructing the TINX-DB using the steps from the [section above](#creating-the-tin-x-database-from-tcrd), the follow commands were run on the tcrd db docker container (the `db` service below):
 
 ```bash
 # Step 1: Install mysqlsh into the already-running container
 # (MySQL repo is already configured in the image, so this just works)
-docker-compose exec mysql microdnf install -y mysql-shell
+docker compose exec db microdnf install -y mysql-shell
 
 # Step 2: Run the schema dump (inside the container, output to /tmp)
-docker-compose exec mysql mysqlsh root@localhost \
-  -- util dump-schemas tcrd \
-  --outputUrl=/tmp/tcrd-shell-dump \
+docker compose exec db mysqlsh root@localhost \
+  -- util dump-schemas tinx \
+  --outputUrl=/tmp/tinx-shell-dump \
   --threads=8 \
   --compression=zstd
 
 # Step 3: Tar it up inside the container
-docker-compose exec mysql tar -czf /tmp/tinx-mysql-shell.tar.gz \
-  -C /tmp tcrd-shell-dump/
+docker compose exec db tar -czf /tmp/tinx-mysql-shell.tar.gz \
+  -C /tmp tinx-shell-dump/
 
 # Step 4: Copy the tarball out to the host
-docker cp $(docker-compose ps -q mysql):/tmp/tinx-mysql-shell.tar.gz ./
+docker cp $(docker compose ps -q db):/tmp/tinx-mysql-shell.tar.gz ./
 ```
 
-This dump file was generated on 03/26/2026.
+**Note:** The `tinx` database in this dump file was created from `TCRD v6.13.4`.

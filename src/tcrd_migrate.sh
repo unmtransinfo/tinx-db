@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -e
+
+# ---------------------------------------------------------------------------
+# Connection parameters — all can be overridden via environment variables.
+#
+#   HOST            Host (or Docker container name/IP) of the MySQL server.
+#                   Default: localhost
+#   PORT            Port the MySQL server is listening on.
+#                   Default: 3306
+#   MYSQL_PASSWORD  Password for the root user. Leave empty to be prompted.
+#
+# Example — MySQL running inside a Docker container:
+#   HOST=my-tcrd-container PORT=3306 ./tcrd_migrate.sh
+# ---------------------------------------------------------------------------
+
+HOST="${HOST:-localhost}"
+PORT="${PORT:-3306}"
+MYSQL_PASSWORD="${MYSQL_PASSWORD:-}"
+
+# Build mysql client argument string.
+# A password is passed via -p<password> only when the variable is non-empty;
+# otherwise the client will prompt interactively.
+mysql_args=(-h "$HOST" -P "$PORT" -u root)
+# If a password is provided use it directly, otherwise pass bare -p to prompt.
+[[ -n "$MYSQL_PASSWORD" ]] && mysql_args+=("-p${MYSQL_PASSWORD}") || mysql_args+=("-p")
+
+# ---------------------------------------------------------------------------
+# 1. Copy the required tables/views from tcrd -> tinx
+# ---------------------------------------------------------------------------
+REQUIRED_TABLES="
+tinx_articlerank
+tinx_disease
+tinx_importance
+tinx_novelty
+pubmed
+protein
+target
+t2tc
+do
+do_parent
+dto
+"
+
+REQUIRED_VIEWS="
+tinx_target
+"
+
+SQL="CREATE DATABASE IF NOT EXISTS tinx;
+SET foreign_key_checks = 0;
+"
+
+for TABLE in $REQUIRED_TABLES; do
+    SQL+="CREATE TABLE tinx.${TABLE} LIKE tcrd.${TABLE};
+INSERT INTO tinx.${TABLE} SELECT * FROM tcrd.${TABLE};
+"
+done
+
+for VIEW in $REQUIRED_VIEWS; do
+    SQL+="CREATE TABLE tinx.${VIEW} AS SELECT * FROM tcrd.${VIEW};
+"
+done
+
+SQL+="SET foreign_key_checks = 1;"
+
+echo "Creating tinx database and copying tables from tcrd..."
+mysql "${mysql_args[@]}" -e "$SQL"
+echo "Done."
+
+# ---------------------------------------------------------------------------
+# 2. Run migration scripts in order against tinx
+# ---------------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+for script in "$SCRIPT_DIR/sql/"*.sql; do
+    echo "Running $(basename "$script")..."
+    mysql "${mysql_args[@]}" tinx < "$script"
+done
+echo "Migration complete."
